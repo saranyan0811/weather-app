@@ -1,15 +1,27 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function Home() {
   const [city, setCity] = useState("");
   const [weather, setWeather] = useState(null);
-  const [bg, setBg] = useState(
-    "linear-gradient(135deg,#74ebd5,#ACB6E5)"
-  );
-
+  const [forecast, setForecast] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [history, setHistory] = useState([]);
+  const [dark, setDark] = useState(false);
+  const [bg, setBg] = useState("#87ceeb");
+
+  const apiKey = "3b3a700abde71a6b5dd17f2272292805";
+
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      const { latitude, longitude } = pos.coords;
+
+      const res = await fetch(
+        `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`
+      );
+      const data = await res.json();
+      setWeather(data);
+    });
+  }, []);
 
   const getWeather = async () => {
     if (!city) return;
@@ -18,16 +30,14 @@ function Home() {
     setError("");
 
     try {
-      const apiKey = "3b3a700abde71a6b5dd17f2272292805";
-
       const res = await fetch(
         `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`
       );
 
       const data = await res.json();
 
-      if (data.cod !== 200 && data.cod !== "200") {
-        setError(data.message || "City not found!");
+      if (data.cod !== 200) {
+        setError("City not found");
         setWeather(null);
         setLoading(false);
         return;
@@ -35,92 +45,77 @@ function Home() {
 
       setWeather(data);
 
-      setHistory((prev) => [city, ...prev.slice(0, 4)]);
-
       const condition = data.weather[0].main;
+      if (condition === "Clear") setBg("#ffe066");
+      else if (condition === "Clouds") setBg("#adb5bd");
+      else if (condition === "Rain") setBg("#74b9ff");
+      else if (condition === "Thunderstorm") setBg("#636e72");
+      else setBg("#87ceeb");
 
-      // 🌈 Dynamic Background
-      if (condition === "Clear")
-        setBg("linear-gradient(135deg,#f6d365,#fda085)");
-      else if (condition === "Clouds")
-        setBg("linear-gradient(135deg,#bdc3c7,#2c3e50)");
-      else if (condition === "Rain")
-        setBg("linear-gradient(135deg,#74ebd5,#ACB6E5)");
-      else if (condition === "Thunderstorm")
-        setBg("linear-gradient(135deg,#373B44,#4286f4)");
-      else if (condition === "Snow")
-        setBg("linear-gradient(135deg,#e6dada,#274046)");
-      else if (condition === "Mist")
-        setBg("linear-gradient(135deg,#606c88,#3f4c6b)");
+      const forecastRes = await fetch(
+        `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric`
+      );
+
+      const forecastData = await forecastRes.json();
+
+      const daily = forecastData.list.filter((_, index) => index % 8 === 0);
+      setForecast(daily);
+
     } catch (err) {
-      setError("Something went wrong!");
-      setWeather(null);
+      setError("Something went wrong");
     }
 
     setLoading(false);
   };
 
   return (
-    <div style={{ ...styles.container, background: bg }}>
-      <div style={styles.card}>
-        <h1 style={styles.title}>🌦️ Weather App</h1>
+    <div
+      style={{
+        ...styles.container,
+        background: bg,
+        color: dark ? "#fff" : "#000"
+      }}
+    >
+      {/* 🌌 ANIMATED BACKGROUND */}
+      <div className="bg-animation"></div>
 
-        <input
-          style={styles.input}
-          placeholder="Enter city..."
-          value={city}
-          onChange={(e) => setCity(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && getWeather()}
-        />
+      {/* 🌙 DARK MODE */}
+      <button style={styles.toggle} onClick={() => setDark(!dark)}>
+        {dark ? "Light Mode ☀️" : "Dark Mode 🌙"}
+      </button>
 
-        <button
-          style={styles.button}
-          onClick={getWeather}
-          onMouseOver={(e) => (e.target.style.transform = "scale(1.05)")}
-          onMouseOut={(e) => (e.target.style.transform = "scale(1)")}
-        >
-          Get Weather
-        </button>
+      <h1>🌦️ Pro Weather App</h1>
 
-        {loading && <p>⏳ Loading...</p>}
-        {error && <p style={{ color: "red" }}>{error}</p>}
+      <input
+        style={styles.input}
+        placeholder="Enter city"
+        value={city}
+        onChange={(e) => setCity(e.target.value)}
+      />
 
-        {weather && weather.main && (
-          <div style={styles.result}>
-            <h2>📍 {weather.name}</h2>
+      <button style={styles.button} onClick={getWeather}>
+        Search
+      </button>
 
-            <h1 style={{ fontSize: "42px", margin: "10px 0" }}>
-              {weather.main.temp.toFixed(1)}°C
-            </h1>
+      {loading && <p>Loading...</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
 
-            <h1 style={{ fontSize: "60px" }}>
-              {weather.weather[0].main === "Clouds"
-                ? "☁️"
-                : weather.weather[0].main === "Clear"
-                ? "☀️"
-                : weather.weather[0].main === "Rain"
-                ? "🌧️"
-                : weather.weather[0].main === "Thunderstorm"
-                ? "⚡"
-                : weather.weather[0].main === "Snow"
-                ? "❄️"
-                : weather.weather[0].main === "Mist"
-                ? "🌫️"
-                : "🌍"}
-            </h1>
+      {weather && weather.main && (
+        <div style={styles.card}>
+          <h2>{weather.name}</h2>
+          <h1>{weather.main.temp}°C</h1>
+          <p>{weather.weather[0].main}</p>
+        </div>
+      )}
 
-            <p>{weather.weather[0].main}</p>
+      <div style={styles.forecast}>
+        {forecast.map((f, i) => (
+          <div key={i} style={styles.day}>
+            <p>{new Date(f.dt_txt).toDateString()}</p>
+            <h3>{f.main.temp}°C</h3>
+            <p>{f.weather[0].main}</p>
           </div>
-        )}
-
-        {history.length > 0 && (
-          <div style={{ marginTop: "15px" }}>
-            <h4>Recent Searches</h4>
-            {history.map((item, i) => (
-              <p key={i}>📍 {item}</p>
-            ))}
-          </div>
-        )}
+        ))}
       </div>
     </div>
   );
@@ -130,53 +125,44 @@ export default Home;
 
 const styles = {
   container: {
-    minHeight: "100vh",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    fontFamily: "Arial",
-    transition: "0.5s ease",
-    padding: "20px",
-  },
-
-  card: {
-    width: "360px",
-    padding: "30px",
-    borderRadius: "20px",
-    background: "rgba(255,255,255,0.15)",
-    backdropFilter: "blur(12px)",
-    WebkitBackdropFilter: "blur(12px)",
-    border: "1px solid rgba(255,255,255,0.3)",
-    boxShadow: "0 8px 32px rgba(0,0,0,0.2)",
     textAlign: "center",
+    minHeight: "100vh",
+    padding: "20px",
+    transition: "all 0.5s"
   },
-
-  title: {
-    marginBottom: "15px",
-  },
-
   input: {
-    width: "90%",
     padding: "10px",
-    borderRadius: "10px",
-    border: "none",
-    outline: "none",
-    marginBottom: "10px",
+    margin: "10px",
+    borderRadius: "8px"
   },
-
   button: {
-    padding: "10px 18px",
-    border: "none",
-    borderRadius: "10px",
-    background: "linear-gradient(135deg,#00c6ff,#0072ff)",
-    color: "white",
-    cursor: "pointer",
-    fontWeight: "bold",
-    transition: "0.3s",
+    padding: "10px 15px",
+    borderRadius: "8px",
+    background: "black",
+    color: "white"
   },
-
-  result: {
+  toggle: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    padding: "8px"
+  },
+  card: {
     marginTop: "20px",
-    animation: "fadeIn 0.5s ease",
+    padding: "20px",
+    background: "rgba(255,255,255,0.3)",
+    borderRadius: "12px"
   },
+  forecast: {
+    display: "flex",
+    gap: "10px",
+    justifyContent: "center",
+    marginTop: "20px",
+    flexWrap: "wrap"
+  },
+  day: {
+    padding: "10px",
+    background: "rgba(0,0,0,0.1)",
+    borderRadius: "10px"
+  }
 };
