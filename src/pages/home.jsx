@@ -100,13 +100,23 @@ function Home() {
       {loading && <p>Loading...</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
 
-      {weather && weather.main && (
-        <div style={styles.card}>
-          <h2>{weather.name}</h2>
-          <h1>{weather.main.temp}°C</h1>
-          <p>{weather.weather[0].main}</p>
-        </div>
-      )}
+     {weather && weather.main && (
+  <div style={styles.card}>
+    <h2>{weather.name}</h2>
+
+    <h1 style={{ fontSize: "70px", margin: "10px 0" }}>
+      {weather.weather[0].main === "Clouds" ? "☁️" :
+       weather.weather[0].main === "Clear" ? "☀️" :
+       weather.weather[0].main === "Rain" ? "🌧️" :
+       weather.weather[0].main === "Thunderstorm" ? "⚡" :
+       weather.weather[0].main === "Snow" ? "❄️" :
+       weather.weather[0].main === "Mist" ? "🌫️" : "🌍"}
+    </h1>
+
+    <h1>{weather.main.temp}°C</h1>
+    <p>{weather.weather[0].main}</p>
+  </div>
+)}
 
       <div style={styles.forecast}>
         {forecast.map((f, i) => (
