@@ -4,7 +4,7 @@ A modern Weather Application built using React and OpenWeather API.
 
 ## 🚀 Live Demo
 
-Netlify Live Site: https://YOUR-NETLIFY-LINK.netlify.app
+Netlify Live Site:https://aquamarine-biscochitos-56bcb8.netlify.app/
 
 ## 📌 Features
 
