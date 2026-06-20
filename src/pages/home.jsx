@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 function Home() {
   const [city, setCity] = useState("");
@@ -10,18 +10,6 @@ function Home() {
   const [bg, setBg] = useState("#87ceeb");
 
   const apiKey = "3b3a700abde71a6b5dd17f2272292805";
-
-  useEffect(() => {
-    navigator.geolocation.getCurrentPosition(async (pos) => {
-      const { latitude, longitude } = pos.coords;
-
-      const res = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`
-      );
-      const data = await res.json();
-      setWeather(data);
-    });
-  }, []);
 
   const getWeather = async () => {
     if (!city) return;
