@@ -1,16 +1,61 @@
-# React + Vite
+# 🌦️ Weather App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern Weather Application built using React and OpenWeather API.
 
-Currently, two official plugins are available:
+## 🚀 Live Demo
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Netlify Live Site: https://YOUR-NETLIFY-LINK.netlify.app
 
-## React Compiler
+## 📌 Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+* Search weather by city name
+* Current temperature display
+* Weather condition display
+* Dynamic weather background
+* Dark/Light mode
+* Auto location weather
+* 5-day weather forecast
+* Responsive design
 
-## Expanding the ESLint configuration
+## 🛠️ Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+* React
+* Vite
+* JavaScript
+* CSS
+* OpenWeather API
+* Netlify
+* GitHub
+
+## 📷 Screenshot
+
+Add a screenshot of your application here.
+
+## 📂 Project Structure
+
+src/
+├── components/
+├── pages/
+├── App.jsx
+├── main.jsx
+└── index.css
+
+## 🎯 Learning Outcomes
+
+This project helped me learn:
+
+* React Components
+* React Hooks (useState, useEffect)
+* API Integration
+* Routing
+* State Management
+* Deployment using Netlify
+* Git & GitHub Workflow
+
+## 📹 Demo Video
+
+Add your Loom or Screen Recording link here.
+
+## 👨‍💻 Author
+
+Saranya
